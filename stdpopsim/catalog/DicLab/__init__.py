@@ -1,4 +1,4 @@
 """
-Catalog definitions for DicLab (Ensembl ID='Dicentrarchus_labrax')
+Catalog definitions for DicLab (Ensembl ID='dicentrarchus_labrax')
 """
 from . import species  # noqa: F401
