@@ -246,6 +246,54 @@ class PiecewiseConstantSize(DemographicModel):
         )
 
 
+class StrictIsolation(DemographicModel):
+    """
+    Class representing a generic simulation model that can be run to output a tree
+    sequence. A generic strict isolation model where a single ancestral
+    population of size NA splits into two populations of constant size N1
+    and N2 time T generations ago, without migration between
+    the split populations. Sampling is disallowed in population index 0,
+    as this is the ancestral population.
+
+    :param float NA: The initial ancestral effective population size
+    :param float N1: The effective population size of population 1
+    :param float N2: The effective population size of population 2
+    :param float T: Time of split between populations 1 and 2 (in generations)
+
+    Example usage:
+
+    .. code-block:: python
+
+        model1 = stdpopsim.StrictIsolation(NA, N1, N2, T)
+
+    """
+
+    def __init__(self, NA, N1, N2, T):
+        model = msprime.Demography()
+        model.add_population(initial_size=N1, name="pop1")
+        model.add_population(initial_size=N2, name="pop2")
+        model.add_population(initial_size=NA, name="ancestral")
+
+        # This is BACKWARDS in time, so the rates are the other
+        # way around forwards time. 
+        model.add_population_split(
+            time=T, ancestral="ancestral", derived=["pop1", "pop2"]
+        )
+        long_description = """
+            A generic strict isolation model where a single ancestral
+            population of size NA splits into two populations of constant size N1
+            and N2 time T generations ago, without migration between
+            the split populations.
+            """
+        super().__init__(
+            id="StrictIsolation",
+            description="Generic SI model",
+            long_description=long_description,
+            model=model,
+            generation_time=1,
+        )        
+
+
 class IsolationWithMigration(DemographicModel):
     """
     Class representing a generic simulation model that can be run to output a tree
@@ -276,11 +324,61 @@ class IsolationWithMigration(DemographicModel):
         model.add_population(initial_size=N2, name="pop2")
         model.add_population(initial_size=NA, name="ancestral")
 
-        # FIXME This is BACKWARDS in time, so the rates are the other
-        # way around forwards time. We should explain this in the documentation
-        # (and probably swap around). Seems like there's not really much
-        # good reason to have this model in here any more though - what
-        # does it do that wouldn't be better done in demes/msprime?
+        # This is BACKWARDS in time, so the rates are the other
+        # way around forwards time.
+        model.set_migration_rate(source="pop1", dest="pop2", rate=M12)
+        model.set_migration_rate(source="pop2", dest="pop1", rate=M21)
+        model.add_population_split(
+            time=T, ancestral="ancestral", derived=["pop1", "pop2"]
+        )
+        long_description = """
+            A generic isolation with migration model where a single ancestral
+            population of size NA splits into two populations of constant size N1
+            and N2 time T generations ago, with migration rates M12 and M21 between
+            the split populations.
+            """
+        super().__init__(
+            id="IsolationWithMigration",
+            description="Generic IM model",
+            long_description=long_description,
+            model=model,
+            generation_time=1,
+        )
+
+
+class SecondaryContact(DemographicModel):
+    """
+    Class representing a generic simulation model that can be run to output a tree
+    sequence. A generic secondary contact model where a single ancestral
+    population of size NA splits into two populations of constant size N1
+    and N2 time T generations ago, with no migration between
+    the split populations until secondary contact starts with migration rates M12 and M21. 
+    Sampling is disallowed in population index 0,
+    as this is the ancestral population.
+
+    :param float NA: The initial ancestral effective population size
+    :param float N1: The effective population size of population 1
+    :param float N2: The effective population size of population 2
+    :param float T: Time of split between populations 1 and 2 (in generations)
+    :param float M12: Migration rate from population 1 to 2
+    :param float M21: Migration rate from population 2 to 1
+
+    Example usage:
+
+    .. code-block:: python
+
+        model1 = stdpopsim.IsolationWithMigration(NA, N1, N2, T, M12, M21)
+
+    """
+
+    def __init__(self, NA, N1, N2, T, M12, M21):
+        model = msprime.Demography()
+        model.add_population(initial_size=N1, name="pop1")
+        model.add_population(initial_size=N2, name="pop2")
+        model.add_population(initial_size=NA, name="ancestral")
+
+        # This is BACKWARDS in time, so the rates are the other
+        # way around forwards time.
         model.set_migration_rate(source="pop1", dest="pop2", rate=M12)
         model.set_migration_rate(source="pop2", dest="pop1", rate=M21)
         model.add_population_split(
