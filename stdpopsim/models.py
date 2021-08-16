@@ -456,3 +456,72 @@ class MigrationPulse(DemographicModel):
             model=model,
             generation_time=1,
         )
+
+
+class AncientIntrogression(DemographicModel):
+    """
+    Class representing a generic simulation model that can be run to output a tree
+    sequence. A generic ancient introgression model where a single ancestral
+    population of size NA first splits into two populations (pop0 and donor lineage) 
+    of constant size N0 and ND time TD generations ago, without migration between
+    the split populations. Then pop0 splits into two populations (pop1 and pop2) 
+    of constant size N1 and N2 time TS generations ago, without migration between
+    the split populations. A single pulse of ancient migration occurs at time TAI
+    generations ago, resulting in a fraction X of individuals in population 2
+    being migrants from the donor lineage. Sampling is disallowed in population index 0,
+    as this is the ancestral population.
+
+    :param float NA: The initial ancestral effective population size
+    :param float N0: The effective population size of population 0
+    :param float ND: The effective population size of donor lineage
+    :param float N1: The effective population size of population 1
+    :param float N2: The effective population size of population 2
+    :param float TD: Time of split between population 0 and donor lineage (in generations)
+    :param float TS: Time of split between populations 1 and 2 (in generations)
+    :param float TAI: Time of ancient introgression from donor lineage to population 2 (in generations)
+    :param float X: Fraction of individuals from population 2 that are migrants from the donor lineage
+
+    Example usage:
+
+    .. code-block:: python
+
+        model1 = stdpopsim.AdmixturePulse(NA, N0, ND, N1, N2, TD, TS, TAI, X)
+
+    """
+
+    def __init__(self, NA, N0, ND, N1, N2, TD, TS, TAI, X):
+        model = msprime.Demography()
+        model.add_population(initial_size=N1, name="pop1")
+        model.add_population(initial_size=N2, name="pop2")
+        model.add_population(initial_size=N0, name="pop0")
+        model.add_population(initial_size=ND, name="donor")
+        model.add_population(initial_size=NA, name="ancestral")
+
+        # This is BACKWARDS in time, so the rates are the other
+        # way around forwards time.
+        model.add_mass_migration(time=TAI, source="pop2", dest="donor", proportion=X)
+        model.add_population_split(
+            time=TS, ancestral="pop0", derived=["pop1", "pop2"]
+        )
+        model.add_population_split(
+            time=TD, ancestral="ancestral", derived=["pop0", "donor"]
+        )
+         
+        long_description = """
+            A generic ancient introgression model where a single ancestral
+            population of size NA first splits into two populations (pop0 and donor lineage) 
+            of constant size N0 and ND time TD generations ago, without migration between
+            the split populations. Then pop0 splits into two populations (pop1 and pop2) 
+            of constant size N1 and N2 time TS generations ago, without migration between
+            the split populations. A single pulse of ancient migration occurs at time TAI
+            generations ago, resulting in a fraction X of individuals in population 2
+            being migrants from the donor lineage. Sampling is disallowed in population index 0,
+            as this is the ancestral population. 
+            """
+        super().__init__(
+            id="AncientIntrogression",
+            description="Generic AI model",
+            long_description=long_description,
+            model=model,
+            generation_time=1,
+        )  
