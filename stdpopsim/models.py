@@ -251,24 +251,24 @@ class StrictIsolation(DemographicModel):
     Class representing a generic simulation model that can be run to output a tree
     sequence. A generic strict isolation model where a single ancestral
     population of size NA splits into two populations of constant size N1
-    and N2 time T generations ago, without migration between
+    and N2 time TS generations ago, without migration between
     the split populations. Sampling is disallowed in population index 0,
     as this is the ancestral population.
 
     :param float NA: The initial ancestral effective population size
     :param float N1: The effective population size of population 1
     :param float N2: The effective population size of population 2
-    :param float T: Time of split between populations 1 and 2 (in generations)
+    :param float TS: Time of split between populations 1 and 2 (in generations)
 
     Example usage:
 
     .. code-block:: python
 
-        model1 = stdpopsim.StrictIsolation(NA, N1, N2, T)
+        model1 = stdpopsim.StrictIsolation(NA, N1, N2, TS)
 
     """
 
-    def __init__(self, NA, N1, N2, T):
+    def __init__(self, NA, N1, N2, TS):
         model = msprime.Demography()
         model.add_population(initial_size=N1, name="pop1")
         model.add_population(initial_size=N2, name="pop2")
@@ -277,12 +277,12 @@ class StrictIsolation(DemographicModel):
         # This is BACKWARDS in time, so the rates are the other
         # way around forwards time. 
         model.add_population_split(
-            time=T, ancestral="ancestral", derived=["pop1", "pop2"]
+            time=TS, ancestral="ancestral", derived=["pop1", "pop2"]
         )
         long_description = """
             A generic strict isolation model where a single ancestral
             population of size NA splits into two populations of constant size N1
-            and N2 time T generations ago, without migration between
+            and N2 time TS generations ago, without migration between
             the split populations.
             """
         super().__init__(
@@ -299,14 +299,14 @@ class IsolationWithMigration(DemographicModel):
     Class representing a generic simulation model that can be run to output a tree
     sequence. A generic isolation with migration model where a single ancestral
     population of size NA splits into two populations of constant size N1
-    and N2 time T generations ago, with migration rates M12 and M21 between
+    and N2 time TS generations ago, with migration rates M12 and M21 between
     the split populations. Sampling is disallowed in population index 0,
     as this is the ancestral population.
 
     :param float NA: The initial ancestral effective population size
     :param float N1: The effective population size of population 1
     :param float N2: The effective population size of population 2
-    :param float T: Time of split between populations 1 and 2 (in generations)
+    :param float TS: Time of split between populations 1 and 2 (in generations)
     :param float M12: Migration rate from population 1 to 2
     :param float M21: Migration rate from population 2 to 1
 
@@ -314,11 +314,11 @@ class IsolationWithMigration(DemographicModel):
 
     .. code-block:: python
 
-        model1 = stdpopsim.IsolationWithMigration(NA, N1, N2, T, M12, M21)
+        model1 = stdpopsim.IsolationWithMigration(NA, N1, N2, TS, M12, M21)
 
     """
 
-    def __init__(self, NA, N1, N2, T, M12, M21):
+    def __init__(self, NA, N1, N2, TS, M12, M21):
         model = msprime.Demography()
         model.add_population(initial_size=N1, name="pop1")
         model.add_population(initial_size=N2, name="pop2")
@@ -329,12 +329,12 @@ class IsolationWithMigration(DemographicModel):
         model.set_migration_rate(source="pop1", dest="pop2", rate=M12)
         model.set_migration_rate(source="pop2", dest="pop1", rate=M21)
         model.add_population_split(
-            time=T, ancestral="ancestral", derived=["pop1", "pop2"]
+            time=TS, ancestral="ancestral", derived=["pop1", "pop2"]
         )
         long_description = """
             A generic isolation with migration model where a single ancestral
             population of size NA splits into two populations of constant size N1
-            and N2 time T generations ago, with migration rates M12 and M21 between
+            and N2 time TS generations ago, with migration rates M12 and M21 between
             the split populations.
             """
         super().__init__(
@@ -410,7 +410,7 @@ class MigrationPulse(DemographicModel):
     population of size NA splits into two populations of constant size N1
     and N2 time TS generations ago, without migration between
     the split populations. A single pulse of migration occurs at time TP
-    generations ago, resulting in a fraction X of individuals in population 2
+    generations ago, resulting in a fraction F of individuals in population 2
     being migrants from population 1. Sampling is disallowed in population index 0,
     as this is the ancestral population.
 
@@ -419,17 +419,17 @@ class MigrationPulse(DemographicModel):
     :param float N2: The effective population size of population 2
     :param float TS: Time of split between populations 1 and 2 (in generations)
     :param float TP: Time of admixture pulse from population 1 to 2 (in generations)
-    :param float X: Fraction of individuals from population 2 that are migrants from population 1
+    :param float F: Fraction of individuals from population 2 that are migrants from population 1
 
     Example usage:
 
     .. code-block:: python
 
-        model1 = stdpopsim.AdmixturePulse(NA, N1, N2, TS, TP, X)
+        model1 = stdpopsim.AdmixturePulse(NA, N1, N2, TS, TP, F)
 
     """
 
-    def __init__(self, NA, N1, N2, TS, TP, X):
+    def __init__(self, NA, N1, N2, TS, TP, F):
         model = msprime.Demography()
         model.add_population(initial_size=N1, name="pop1")
         model.add_population(initial_size=N2, name="pop2")
@@ -437,7 +437,7 @@ class MigrationPulse(DemographicModel):
 
         # This is BACKWARDS in time, so the rates are the other
         # way around forwards time.
-        model.add_mass_migration(time=TP, source="pop2", dest="pop1", proportion=X)
+        model.add_mass_migration(time=TP, source="pop2", dest="pop1", proportion=F)
         model.add_population_split(
             time=TS, ancestral="ancestral", derived=["pop1", "pop2"]
         )
@@ -446,7 +446,7 @@ class MigrationPulse(DemographicModel):
             population of size NA splits into two populations of constant size N1
             and N2 time TS generations ago, without migration between
             the split populations. A single pulse of migration occurs at time TP
-            generations ago, resulting in a fraction X of individuals in population 2
+            generations ago, resulting in a fraction F of individuals in population 2
             being migrants from population 1. 
             """
         super().__init__(
@@ -467,7 +467,7 @@ class AncientIntrogression(DemographicModel):
     the split populations. Then pop0 splits into two populations (pop1 and pop2) 
     of constant size N1 and N2 time TS generations ago, without migration between
     the split populations. A single pulse of ancient migration occurs at time TAI
-    generations ago, resulting in a fraction X of individuals in population 2
+    generations ago, resulting in a fraction F of individuals in population 2
     being migrants from the donor lineage. Sampling is disallowed in population index 0,
     as this is the ancestral population.
 
@@ -479,17 +479,17 @@ class AncientIntrogression(DemographicModel):
     :param float TD: Time of split between population 0 and donor lineage (in generations)
     :param float TS: Time of split between populations 1 and 2 (in generations)
     :param float TAI: Time of ancient introgression from donor lineage to population 2 (in generations)
-    :param float X: Fraction of individuals from population 2 that are migrants from the donor lineage
+    :param float F: Fraction of individuals from population 2 that are migrants from the donor lineage
 
     Example usage:
 
     .. code-block:: python
 
-        model1 = stdpopsim.AdmixturePulse(NA, N0, ND, N1, N2, TD, TS, TAI, X)
+        model1 = stdpopsim.AdmixturePulse(NA, N0, ND, N1, N2, TD, TS, TAI, F)
 
     """
 
-    def __init__(self, NA, N0, ND, N1, N2, TD, TS, TAI, X):
+    def __init__(self, NA, N0, ND, N1, N2, TD, TS, TAI, F):
         model = msprime.Demography()
         model.add_population(initial_size=N1, name="pop1")
         model.add_population(initial_size=N2, name="pop2")
@@ -499,7 +499,7 @@ class AncientIntrogression(DemographicModel):
 
         # This is BACKWARDS in time, so the rates are the other
         # way around forwards time.
-        model.add_mass_migration(time=TAI, source="pop2", dest="donor", proportion=X)
+        model.add_mass_migration(time=TAI, source="pop2", dest="donor", proportion=F)
         model.add_population_split(
             time=TS, ancestral="pop0", derived=["pop1", "pop2"]
         )
@@ -514,7 +514,7 @@ class AncientIntrogression(DemographicModel):
             the split populations. Then pop0 splits into two populations (pop1 and pop2) 
             of constant size N1 and N2 time TS generations ago, without migration between
             the split populations. A single pulse of ancient migration occurs at time TAI
-            generations ago, resulting in a fraction X of individuals in population 2
+            generations ago, resulting in a fraction F of individuals in population 2
             being migrants from the donor lineage. Sampling is disallowed in population index 0,
             as this is the ancestral population. 
             """
