@@ -29,7 +29,7 @@ _recombination_rate = {
     "LGx": 1e-8,
 }
 
-_overall_rate = 1e-8
+_overall_rate = 8.45e-9
 _mutation_rate = {
     "LG1A": _overall_rate,
     "LG1B": _overall_rate,
@@ -70,11 +70,11 @@ _genome = stdpopsim.Genome.from_data(
             reasons={stdpopsim.CiteReason.ASSEMBLY, stdpopsim.CiteReason.REC_RATE, stdpopsim.CiteReason.MUT_RATE},
         ),
         stdpopsim.Citation(
-            author="Keightley et al",
-            year=2015,
-            doi="https://doi.org/10.1093/molbev/msu302"
+            author="Duranton et al",
+            year=2018,
+            doi="https://doi.org/10.1038/s41467-018-04963-6"
 ,
-            reasons={stdpopsim.CiteReason.MUT_RATE},
+            reasons={stdpopsim.CiteReason.POP_SIZE},
         ),
     ],
 )
@@ -86,8 +86,8 @@ _species = stdpopsim.Species(
     name="Dicentrarchus labrax",
     common_name="Dicentrarchus labrax",
     genome=_genome,
-    generation_time=9.5 / 100,
-    population_size=2.5e5,
+    generation_time=5,
+    population_size=100e5,
     citations=[
         stdpopsim.Citation(
             author="Tine et al",
