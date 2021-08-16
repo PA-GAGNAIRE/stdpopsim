@@ -401,3 +401,58 @@ class SecondaryContact(DemographicModel):
             model=model,
             generation_time=1,
         )
+
+
+class MigrationPulse(DemographicModel):
+    """
+    Class representing a generic simulation model that can be run to output a tree
+    sequence. A generic migration pulse model where a single ancestral
+    population of size NA splits into two populations of constant size N1
+    and N2 time TS generations ago, without migration between
+    the split populations. A single pulse of migration occurs at time TP
+    generations ago, resulting in a fraction X of individuals in population 2
+    being migrants from population 1. Sampling is disallowed in population index 0,
+    as this is the ancestral population.
+
+    :param float NA: The initial ancestral effective population size
+    :param float N1: The effective population size of population 1
+    :param float N2: The effective population size of population 2
+    :param float TS: Time of split between populations 1 and 2 (in generations)
+    :param float TP: Time of admixture pulse from population 1 to 2 (in generations)
+    :param float X: Fraction of individuals from population 2 that are migrants from population 1
+
+    Example usage:
+
+    .. code-block:: python
+
+        model1 = stdpopsim.AdmixturePulse(NA, N1, N2, TS, TP, X)
+
+    """
+
+    def __init__(self, NA, N1, N2, TS, TP, X):
+        model = msprime.Demography()
+        model.add_population(initial_size=N1, name="pop1")
+        model.add_population(initial_size=N2, name="pop2")
+        model.add_population(initial_size=NA, name="ancestral")
+
+        # This is BACKWARDS in time, so the rates are the other
+        # way around forwards time.
+        model.add_mass_migration(time=TP, source="pop2", dest="pop1", proportion=X)
+        model.add_population_split(
+            time=TS, ancestral="ancestral", derived=["pop1", "pop2"]
+        )
+        long_description = """
+            A generic migration pulse model where a single ancestral
+            population of size NA splits into two populations of constant size N1
+            and N2 time TS generations ago, without migration between
+            the split populations. A single pulse of migration occurs at time TP
+            generations ago, resulting in a fraction X of individuals in population 2
+            being migrants from population 1. 
+            """
+        super().__init__(
+            id="MigrationPulse",
+            description="Generic MP model",
+            long_description=long_description,
+            model=model,
+            generation_time=1,
+        )
