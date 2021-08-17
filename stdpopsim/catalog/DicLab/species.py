@@ -87,7 +87,7 @@ _species = stdpopsim.Species(
     common_name="Dicentrarchus labrax",
     genome=_genome,
     generation_time=5,
-    population_size=100e5,
+    population_size=1e5,
     citations=[
         stdpopsim.Citation(
             author="Tine et al",
