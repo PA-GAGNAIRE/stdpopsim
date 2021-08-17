@@ -53,19 +53,17 @@ _genome = stdpopsim.Genome.from_data(
     genome_data.data,
     recombination_rate=_recombination_rate,
     mutation_rate=_mutation_rate,
-    citations=[],
 )
 stdpopsim.utils.append_common_synonyms(_genome)
 
 _species = stdpopsim.Species(
-    id="SpeGen",
+    id="GenSpe",
     ensembl_id="genus_species",
     name="Genus species",
     common_name="Genus species",
     genome=_genome,
     generation_time=1,
     population_size=2.5e4,
-    citations=[],
 )
 
 stdpopsim.register_species(_species)
