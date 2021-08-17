@@ -4,7 +4,7 @@
 # http://ftp.ebi.ac.uk/pub/databases/ena/assembly/GCA_000/GCA_000689/GCA_000689215.1_sequence_report.txt
 #
 data = {
-    "assembly_accession": GCA_000689215 ,
+    "assembly_accession": "GCA_000689215",
     "assembly_name": "GCA_000689215.1",
     "chromosomes": {
         "LG1A": {"length": 29036788, "synonyms": []},
