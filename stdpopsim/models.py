@@ -418,14 +418,14 @@ class MigrationPulse(DemographicModel):
     :param float N1: The effective population size of population 1
     :param float N2: The effective population size of population 2
     :param float TS: Time of split between populations 1 and 2 (in generations)
-    :param float TP: Time of admixture pulse from population 1 to 2 (in generations)
+    :param float TP: Time of migration pulse from population 1 to 2 (in generations)
     :param float F: Fraction of individuals from population 2 that are migrants from population 1
 
     Example usage:
 
     .. code-block:: python
 
-        model1 = stdpopsim.AdmixturePulse(NA, N1, N2, TS, TP, F)
+        model1 = stdpopsim.MigrationPulse(NA, N1, N2, TS, TP, F)
 
     """
 
@@ -485,7 +485,7 @@ class AncientIntrogression(DemographicModel):
 
     .. code-block:: python
 
-        model1 = stdpopsim.AdmixturePulse(NA, N0, ND, N1, N2, TD, TS, TAI, F)
+        model1 = stdpopsim.AncientIntrogression(NA, N0, ND, N1, N2, TD, TS, TAI, F)
 
     """
 
